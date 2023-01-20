@@ -1,0 +1,23 @@
+.header {
+  background-color: blue;
+  height: 84px;
+}
+.header__container {
+  display: flex;
+  max-width: 1440px;
+  justify-content: center;
+  padding-top: 25px;
+}
+.form {
+  display: flex;
+}
+.header__input {
+  justify-content: center;
+  padding-left: 15px;
+  width: 300px;
+  height: 30;
+}
+.header__btn {
+}
+.header__search--icon {
+}

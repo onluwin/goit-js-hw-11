@@ -7,7 +7,29 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <h1>wewe</h1>
+    <header class="header">
+      <div class="header__container">
+        <form action="" class="form">
+          <input
+            class="header__input"
+            type="text"
+            name="searchQuery"
+            autocomplete="off"
+            placeholder="Search images..."
+          />
+          <button type="submit" class="header__btn">
+            <img
+              class="header__search--icon"
+              src="./images/search-icon.jpg"
+              width="25"
+              height="25"
+              alt="search-icon"
+            />
+          </button>
+        </form>
+      </div>
+    </header>
+    <div class="gallery"></div>
     <script type="module" src="./index.js"></script>
   </body>
 </html>
