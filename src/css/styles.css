@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 /* ----------HEADER---------- */
 
 .header {
@@ -26,17 +30,19 @@
 
 /* ----------GALLERY---------- */
 
-.photo-card img {
-  display: block;
-  max-width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
 .gallery {
   width: 1200px;
   display: flex;
   flex-wrap: wrap;
   margin: auto;
+  margin-bottom: 60px;
+}
+
+.photo-card img {
+  display: block;
+  max-width: 100%;
+  height: 220px;
+  object-fit: cover;
 }
 
 .photo-card {
@@ -55,4 +61,61 @@
 .info {
   display: flex;
   padding: 10 0 10 0;
+}
+
+/* ___loadMoreBtn___ */
+.load-more--btn {
+  display: flex;
+  width: 200px;
+  height: 50px;
+  background-color: #0505c0;
+  border: none;
+  border-radius: 10px;
+  transition-duration: 0.4s;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0 auto;
+  margin-bottom: 60px;
+}
+/* ___loadMoreBtn___ */
+
+/* ___on-top-btn___ */
+
+.on-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99;
+  border: 2px solid var(--accent-color);
+  outline: none;
+  background-color: transparent;
+  color: var(--title-color);
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  -webkit-transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    border 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    border 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: none;
+}
+
+.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
 }

@@ -1,8 +1,10 @@
 import { refs } from "../refs";
 
 function addMarkupToPage(markup) {
-    refs.gallery.insertAdjacentHTML('afterbegin', markup)
+    refs.gallery.insertAdjacentHTML('beforeend', markup)
+}
+function resetMarkup() {
+    refs.gallery.innerHTML = ''
 }
 
-
-export { addMarkupToPage, }
+export { addMarkupToPage, resetMarkup, }
