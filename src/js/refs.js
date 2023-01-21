@@ -1,5 +1,5 @@
 export const refs = {
     form: document.querySelector('.form'),
     input: document.querySelector('.header__input'),
-    gallery: document.querySelector('.gallery__container'),
+    gallery: document.querySelector('.gallery'),
 }

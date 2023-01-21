@@ -1,6 +1,7 @@
 import "./css/reset.css";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
+
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 
@@ -11,7 +12,7 @@ import { addMarkupToPage, } from "./js/markup/markupMethods";
 
 const { form, input, } = refs
 
-const lightbox = new SimpleLightbox('.gallery a', {
+const lightbox = new SimpleLightbox('.photo-card a', {
     captionType: 'attr',
     captionsData: 'alt',
     captionDelay: 250,
