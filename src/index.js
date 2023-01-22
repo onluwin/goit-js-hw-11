@@ -1,75 +1,127 @@
 import "./css/reset.css";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 
 import { refs } from "./js/refs";
-import { pixabayAPI } from "./js/fetch/fetchAPI";
-import { createMarkup } from './js/markup/createMarkup'
-import { addMarkupToPage, resetMarkup, } from "./js/markup/markupMethods";
-import { smoothScroll } from "./js/smooth-scroll";
-import { scrollFunction, topFunction, } from "./js/scrollBtn";
+import { PixabayAPI } from "./js/FetchAPI";
+import { MarkupAPI } from "./js/Markup";
+import { smoothScroll } from "./js/scroll/smooth-scroll";
+import { onToTopBtnClick, throttledHideTopBtn, } from "./js/scroll/scrollBtn";
 
-const { form, input, loadMoreBtn, onTopBtn } = refs
+const { form, input, loadMoreBtn, onTopBtn } = refs;
 
 const lightbox = new SimpleLightbox('.photo-card a');
-const fetchAPI = new pixabayAPI()
+const FetchAPI = new PixabayAPI()
+const Markup = new MarkupAPI()
 
 initPage()
 
 let query = ''
 let lowerCasedQuery = ''
 
-window.onscroll = function() {scrollFunction()};
+window.onscroll = throttledHideTopBtn;
+
+// --------OBSERVER--------- //
+
+const options = {
+    root: null,
+    rootMargin: '100px',
+    threshold: 1.0
+}
+
+let target = null;
+
+const callback = function(entries, observer) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            try {
+                io.unobserve(entry.target)
+                FetchAPI.fetchQuery(FetchAPI.query)
+                    .then(({ hits, total, totalHits }) => {
+                        if (!FetchAPI.isShowLoadMore) {
+                            io.unobserve(entry.target)
+                            Notify.info("We're sorry, but you've reached the end of search results.")
+                            return;
+                        }
+                        FetchAPI.incrementPage()
+                        const markup = Markup.createMarkup(hits)
+                        Markup.addMarkupToPage(markup)
+                        smoothScroll();
+                        lightbox.refresh();
+                        target = document.querySelector('.photo-card:last-child');
+                        io.observe(target)
+
+                    })
+                    .catch(console.log)
+                
+                
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    });
+};
+const io = new IntersectionObserver(callback, options);
 
 function onSubmitBtnClick(e) {
     e.preventDefault();
 
     query = input.value.trim()
     lowerCasedQuery = query.toLowerCase();
+    FetchAPI.resetPage()
 
-    fetchAPI.resetPage()
-
-    fetchAPI.fetchQuery(query)
-        .then(({ hits, total, totalHits }) => {
-            resetMarkup()
-            fetchAPI.removeLoadMoreBtn()
+    try {
+        FetchAPI.fetchQuery(query)
+            .then(({ hits, total, totalHits }) => {
+            
+            Markup.resetMarkup()
+            // FetchAPI.removeLoadMoreBtn()
             console.log({ hits, total, totalHits });
             if (query === '') return Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             if (hits.length === 0) return Notify.failure(`Ooops, there are no images with that query: ${query}`);
             Notify.success(`Hooray! We found ${totalHits} images.`)
             
-            const markup = createMarkup(hits)
-            addMarkupToPage(markup)
-            fetchAPI.calculateTotalPages(total)
-            if (fetchAPI.isShowLoadMore) {
-                fetchAPI.addLoadMoreBtn();
+            const markup = Markup.createMarkup(hits)
+            Markup.addMarkupToPage(markup)
+            
+            
+            
+            FetchAPI.calculateTotalPages(total)
+            if (FetchAPI.isShowLoadMore) {
+                // FetchAPI.addLoadMoreBtn();
+                target = document.querySelector('.photo-card:last-child');
+                setTimeout(() => {
+                    io.observe(target)
+                }, 500);
             }
-            fetchAPI.incrementPage()
+            FetchAPI.incrementPage()
             
             lightbox.refresh();
             form.reset()
         })
         .catch(console.log)
-}
+    } catch(error) {console.log(error)}
+} 
 
 function onLoadMoreBtnClick() {
-    fetchAPI.fetchQuery(query)
+    FetchAPI.fetchQuery(query)
         .then(({ hits, total, totalHits }) => {
-            fetchAPI.calculateTotalPages(total)
-            if (!fetchAPI.isShowLoadMore) {
-                fetchAPI.removeLoadMoreBtn();
-                Notify.info("We're sorry, but you've reached the end of search results.")
-            }
-            fetchAPI.incrementPage()
+            // FetchAPI.calculateTotalPages(total)
+            // if (!FetchAPI.isShowLoadMore) {
+            //     FetchAPI.removeLoadMoreBtn();
+            //     target = document.querySelector('.photo-card:last-child');
+            //     io.unobserve(target)
+            //     return
+            // }
+            // FetchAPI.incrementPage()
             
-            const markup = createMarkup(hits)
-            addMarkupToPage(markup)
-            smoothScroll()
+            // const markup = Markup.createMarkup(hits)
+            // Markup.addMarkupToPage(markup)
+            // smoothScroll()
             
-            lightbox.refresh();
+            // lightbox.refresh();
 
         })
         .catch(console.log);
@@ -80,6 +132,7 @@ function initPage () {
     document.documentElement.scrollTop = 0;
 }
 
+
+// loadMoreBtn.addEventListener('click', onLoadMoreBtnClick)
 form.addEventListener('submit', onSubmitBtnClick)
-loadMoreBtn.addEventListener('click', onLoadMoreBtnClick)
-onTopBtn.addEventListener('click', topFunction)
+onTopBtn.addEventListener('click', onToTopBtnClick)
